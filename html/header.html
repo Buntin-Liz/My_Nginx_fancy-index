@@ -1,0 +1,170 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="/fancy-index/css/reset.css" />
+        <meta name="viewport" content="width=device-width, user-scalable=no" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" type="text/css" href="/fancy-index/css/jquery.fancybox.css" media="screen" />
+        <script type="text/javascript" src="/fancy-index/js/punycode.min.js"></script>
+        <script type="text/javascript" src="/fancy-index/js/jquery-2.1.1.min.js"></script>
+        <script type="text/javascript" src="/fancy-index/js/jquery.fancybox-2.1.5.min.js"></script>
+        <script type="text/javascript" src="/fancy-index/js/jquery.mousewheel.min.js"></script>
+        <script type="text/javascript" src="/fancy-index/js/qrcode.js"></script>
+        <script type="text/javascript" src="/fancy-index/js/jquery.qrcode.js"></script>
+        <script type="text/javascript" src="/fancy-index/js/jquery.unveil.min.js"></script>
+        <script type="text/javascript" src="/fancy-index/config/mimetypes.js"></script>
+        <script type="text/javascript" src="/fancy-index/config/themes.js"></script>
+        <script type="text/javascript" src="/fancy-index/js/common.js"></script>
+        <script type="text/javascript" src="/fancy-index/js/sprintf.js"></script>
+        <script type="text/javascript" src="/fancy-index/js/moarplayer.js"></script>
+        <script type="text/javascript" src="/fancy-index/js/moarcloud.js"></script>
+        <script type="text/javascript" src="/fancy-index/js/moarcloud-l10n.js"></script>
+        <script type="text/javascript" src="/fancy-index/js/moarcloud-l10n-et.js"></script>
+        <link rel="stylesheet" type="text/css" href="/fancy-index/css/breadcrumbs.css" />
+        <link rel="stylesheet" type="text/css" href="/fancy-index/css/gallery.css" />
+        <style type="text/css">
+            #list {
+                display: none;
+                border-collapse: collapse;
+            }
+
+            #list th,
+            #list td {
+                padding: 2px;
+                border: 1px solid black;
+            }
+
+            #loader {
+                background: #ddd;
+                position: fixed;
+                left: 0;
+                bottom: 0;
+                top: 0;
+                right: 0;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                z-index: 99999;
+            }
+
+            #loader div {
+                font-family: sans;
+                font-size: 8pt;
+                position: fixed;
+                text-align: center;
+                left: 50%;
+                top: 50%;
+                width: 20em;
+                height: 40px;
+                margin: -20px auto auto -10em;
+            }
+
+            #actions,
+            #settings,
+            #audio_player,
+            #video_player {
+                display: none;
+            }
+
+            #audio_player,
+            #video_player {
+                margin: 0;
+                padding: 0;
+                width: 250px;
+            }
+
+            #actions .audio,
+            #actions .video {
+                display: none;
+            }
+        </style>
+        <!-- jp -->
+    </head>
+
+    <body>
+        <audio id="audio_player" style="display: none"></audio>
+
+        <div id="actions">
+            <div class="directory section">
+                <h1 class="i18n">Directory details</h1>
+
+                <p class="action play audio" style="display: none"><a class="i18n">Play audio tracks in browser</a></p>
+                <p class="action watch video" style="display: none"><a class="i18n">Watch videos in browser</a></p>
+                <p class="action xspf audio" style="display: none"><a class="i18n">Play audio tracks in VLC</a></p>
+                <p class="action xspf video" style="display: none"><a class="i18n">Watch videos in VLC</a></p>
+                <!--            <p class="action wget recurse i18n" style="display:none;">Download using wget</p>-->
+                <p class="directory_count"></p>
+                <p class="file_count"></p>
+                <div id="location"></div>
+            </div>
+            <div class="file section" style="display: none">
+                <h1 class="i18n">File details</h1>
+                <p class="action download"><a class="i18n">Download</a></p>
+                <p class="mimetype"></p>
+                <p class="size"></p>
+            </div>
+
+            <div class="video section">
+                <h1 class="i18n">Video details</h1>
+                <div class="screens"></div>
+
+                <p class="duration">00:00:00</p>
+                <p class="codec">?</p>
+                <p class="resolution">?</p>
+                <video id="video_player" controls>Your browser does not support HTML5 video</video>
+            </div>
+        </div>
+
+        <div id="audio_player_controls">
+            <div class="buttons">
+                <button class="action previous"></button><button class="action play"></button><button class="action pause" style="display: none"></button><button class="action stop"></button
+                ><button class="action next"></button>
+            </div>
+
+            <div class="top">
+                <span class="title"></span>
+                <span class="codec"></span>
+            </div>
+
+            <div class="remainder">
+                <span class="offset">00:00:00</span>
+                <span class="seek"><input type="range" min="0" max="100" /></span>
+                <span class="duration">00:00:00</span>
+            </div>
+        </div>
+
+        <div id="loader">
+            <div>
+                <p>Enhancing directory listing...</p>
+                <img src="/fancy-index/img/ajax-loader.gif" />
+            </div>
+        </div>
+
+        <nav id="breadcrumbs"></nav>
+
+        <div id="directories">
+            <h1 class="i18n">Directories</h1>
+            <div class="items"></div>
+        </div>
+        <div id="gallery">
+            <h1 class="i18n">Photos and images</h1>
+            <div class="items"></div>
+        </div>
+        <div id="videos">
+            <h1 class="i18n">Videos</h1>
+            <div class="items"></div>
+        </div>
+
+        <div id="tracks">
+            <h1 class="i18n">Audio tracks</h1>
+            <div class="items"></div>
+        </div>
+
+        <div id="otherFiles">
+            <h1 class="i18n">Other files</h1>
+            <div class="items"></div>
+        </div>
+
+        <h1 style="display: none"></h1>
+    </body>
+</html>
